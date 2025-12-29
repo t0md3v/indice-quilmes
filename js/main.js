@@ -6,16 +6,19 @@
      } **/
 // Interval is 5 sec 
 
-fetch("https://www.cotodigital.com.ar/sitios/cdigi/productos/00238214?json=true&idSucursal=200")
-  .then(r => r.json())
-  .then(data => {
-    // Cotodigital usually stores the final sale price in 'precioFinal'
-    const product = data?.productos?.[0];
-    const price = product?.precioFinal ?? product?.precioRegular;
+fetch("https://www.cotodigital.com.ar/sitios/cdigi/productos/00238214?idSucursal=200")
+  .then(r => r.text())
+  .then(html => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
 
-    document.getElementById("price").textContent =
-      price ? `$${price}` : "N/A";
+    const priceEl = doc.querySelector(".precioProducto, .precioFinal");
+    const price = priceEl ? priceEl.textContent.trim() : null;
+
+    document.getElementById("price").textContent = price ?? "N/A";
   })
-  .catch(() => {
+  .catch(err => {
+    console.error(err);
     document.getElementById("price").textContent = "N/A";
   });
+
