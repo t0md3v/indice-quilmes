@@ -6,13 +6,13 @@
      } **/
 // Interval is 5 sec 
 
-fetch("price.json")
+fetch("https://www.cotodigital.com.ar/sitios/cdigi/productos/00238214?json=true&idSucursal=200")
   .then(r => r.json())
-  .then(d => {
-    document.getElementById("price").textContent = d.price;
-    document.getElementById("time").textContent =
-      "Last checked: " + new Date(d.checkedAt).toLocaleString();
+  .then(data => {
+    const price = data?.productos?.[0]?.precioRegular;
+    document.getElementById("price").textContent =
+      price ? `$${price}` : "N/A";
   })
   .catch(() => {
-    document.getElementById("price").textContent = "oops 🤡";
+    document.getElementById("price").textContent = "N/A";
   });
