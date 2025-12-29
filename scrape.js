@@ -11,11 +11,16 @@ const run = async () => {
   await page.goto(URL, { waitUntil: "networkidle" });
 
   // grab anything that looks like a price
-  const price = await page.evaluate(() => {
-    const text = document.body.innerText;
-    const match = text.match(/\$\s?\d+(\.\d+)?/);
-    return match ? match[0] : "N/A";
-  });
+const price = await page.evaluate(() => {
+  const divs = Array.from(document.querySelectorAll("div"));
+  const el = divs.find(d =>
+    d.innerText.includes("Precio regular")
+  );
+  return el
+    ? el.innerText.replace("Precio regular :", "").trim()
+    : "N/A";
+});
+
 
   await browser.close();
 
