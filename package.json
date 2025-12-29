@@ -1,8 +1,5 @@
 {
   "name": "price-scraper",
   "version": "1.0.0",
-  "type": "module",
-  "dependencies": {
-    "playwright": "^1.42.0"
-  }
+  "type": "module"
 }
