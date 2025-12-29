@@ -1,26 +1,26 @@
-import fetch from "node-fetch";
+import { chromium } from "playwright";
 import fs from "fs";
-import cheerio from "cheerio";
 
 const URL =
   "https://www.cotodigital.com.ar/sitios/cdigi/productos/cerveza-quilmes-botella-1-l/_/R-00238214-00238214-200?idSucursal=200";
 
 const run = async () => {
-  const res = await fetch(URL, {
-    headers: { "User-Agent": "Mozilla/5.0" }
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage();
+
+  await page.goto(URL, { waitUntil: "networkidle" });
+
+  // grab anything that looks like a price
+  const price = await page.evaluate(() => {
+    const text = document.body.innerText;
+    const match = text.match(/\$\s?\d+(\.\d+)?/);
+    return match ? match[0] : "N/A";
   });
 
-  const html = await res.text();
-  const $ = cheerio.load(html);
-
-  // crude but works — refine later
-  const price = $("span")
-    .map((_, el) => $(el).text().trim())
-    .get()
-    .find(t => t.startsWith("$"));
+  await browser.close();
 
   const data = {
-    price: price || "N/A",
+    price,
     checkedAt: new Date().toISOString()
   };
 
